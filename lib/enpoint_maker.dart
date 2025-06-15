@@ -3,6 +3,9 @@ import 'dart:io';
 import 'package:generatorob/extension.dart';
 import 'package:generatorob/helper.dart';
 import 'package:generatorob/messages.dart';
+import 'package:generatorob/model_from_json_gen.dart';
+import 'package:generatorob/repository_maker.dart';
+import 'package:generatorob/service.dart';
 import 'package:http/http.dart';
 
 enum ApiType {
@@ -33,7 +36,7 @@ class EndPointMaker {
       await File(file).writeAsString(endpointClass.toString());
     }
     print("☑️ Base URL :  $baseUrl");
-    for (var i = 1; i < count; i++) {
+    for (var i = 0; i < count; i++) {
       print("☑️ Endpoint :  ${endpoint[i]}");
     }
 
@@ -46,6 +49,7 @@ class EndPointMaker {
         "}",
         '  static const baseUrl = "$ans";\n}',
       );
+
       File(file).writeAsStringSync(newString);
     }
 
@@ -88,6 +92,9 @@ class EndPointMaker {
             );
             File(file).writeAsStringSync(newString);
             count += 1; // ne this to update only if added
+
+            var url = "$baseUrl/$ans";
+            print("☑️ URL :  $url");
             success(ans);
             break;
           }
@@ -102,13 +109,24 @@ class EndPointMaker {
         );
         File(file).writeAsStringSync(newString);
         count += 1; // ne this to update only if added
-        success(ans);
-      }
 
+        var json = await ServiceMaker.fetchJsonFormApi(ans);
+        success(ans);
+        // print(json);
+        var dc = DartClassMaker.generateDartClass(
+          ans.toEndpointVariableName(),
+          json,
+        );
+        if (dc.isNotEmpty) {
+          var repo = RepositoryMaker.generateRepository(
+            ans,
+          );
+          print(dc);
+          print(repo);
+          printf("Need to update repo file");
+        }
+      }
     }
-     var yn = promptForInput("Do you wish to generate model? : ");
-     
-     print("Tested Okay up to here");
   }
 
   /// Creates the necessary files and directories if they do not already exist.
@@ -143,7 +161,7 @@ class EndPointMaker {
         endpoints.add(e.split('"')[1]);
       }
     }).toList();
-
+    if (endpoints.length > 1) endpoints.removeAt(0);
     return (baseUrl, endpoints);
   }
 

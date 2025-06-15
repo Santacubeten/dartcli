@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
@@ -10,20 +12,20 @@ class ServiceMaker {
   ///
   /// This method fetches a JSON response from the specified API endpoint.
   static Future<Map<String, dynamic>> fetchJsonFormApi(
-    String baseUrl,
+    // String baseUrl,
     endpoint,
-    bool isSecure,
+    // bool isSecure,
   ) async {
     late Uri uri;
-
+    var (host, isSecure) = getHost();
     try {
       if (isSecure) {
-        uri = Uri.https(baseUrl, endpoint);
+        uri = Uri.https(host, endpoint);
       } else {
-        uri = Uri.http(baseUrl, endpoint);
+        uri = Uri.http(host, endpoint);
       }
       var response = await http.get(uri);
-      uri = Uri.http(baseUrl, endpoint);
+      uri = Uri.http(host, endpoint);
       response = await http.get(uri);
 
       if (response.statusCode == 200) {
@@ -46,5 +48,28 @@ class ServiceMaker {
       print('Error during HTTP request: $e');
       throw Exception(); // Return null or throw an exception on failure
     }
+  }
+
+  static (String, bool) getHost() {
+    var filePath = "lib/services/endpoint.dart";
+    var file = File(filePath);
+    var lines = file.readAsLinesSync();
+    String baseUrl = "";
+    bool isSecure = false;
+
+    lines.map((e) {
+      if (e.contains("static const baseUrl")) {
+        baseUrl = e.split('"')[1];
+        if (e.contains("https")) {
+          isSecure = true;
+        }
+      }
+    }).toList();
+
+    if (baseUrl.isEmpty) {
+      print("Missing baseUrl");
+    }
+
+    return (baseUrl.split("//").last.split("/").first, isSecure);
   }
 }
