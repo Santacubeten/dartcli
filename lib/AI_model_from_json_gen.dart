@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:generatorob/extension.dart';
+import 'package:generatorob/messages.dart';
 import 'package:generatorob/project_path_provider.dart';
 
 class DartClassMaker {
@@ -28,6 +29,10 @@ class DartClassMaker {
       final fieldName = firstLowerCap(modifyString(key));
       if (key == 'id') {
         classBuffer.writeln('  @Id()\n  int? id;');
+      } else if (value is String && _looksLikeDate(value)) {
+        classBuffer.writeln(
+          "      @Property(type: PropertyType.date)\nfinal DateTime $fieldName;",
+        );
       } else if (value is Map<String, dynamic>) {
         final nestedType = key.toModelName();
         nestedImports.add(key);
@@ -152,7 +157,6 @@ class DartClassMaker {
     });
     classBuffer.writeln('    );');
     classBuffer.writeln('  }');
-    
 
     classBuffer.writeln('}');
 
@@ -180,6 +184,7 @@ class DartClassMaker {
 
     if (file.existsSync()) {
       print("❌ File already exists: ${className.toFileName()}");
+      file.createSync(recursive: true);
     } else {
       try {
         file.writeAsStringSync("$importBuffer\n$classBuffer");

@@ -119,20 +119,15 @@ class EndPointMaker {
         var json = await ServiceMaker.fetchJsonFormApi(ans);
         success(ans);
 
-        
-          listOfJsonData.add(json);
+        listOfJsonData.add(json);
+
         ///Save the json to the lib/common/rawjson
         JsonMaker.saveJson(json, ans.toEndpointVariableName());
 
         // print(listOfJsonData);
 
-        var dc = DartClassMaker.generateDartClass(
-          ans.toEndpointVariableName(),
-          json,
-        );
+        DartClassMaker.generateDartClass(ans.toEndpointVariableName(), json);
 
-
-        
         // if (dc.isNotEmpty) {
         //   var repo = RepositoryMaker.generateRepository(ans);
         //   // print(dc);
