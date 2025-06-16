@@ -2,8 +2,9 @@ import 'dart:io';
 
 import 'package:generatorob/extension.dart';
 import 'package:generatorob/helper.dart';
+import 'package:generatorob/json_maker.dart';
 import 'package:generatorob/messages.dart';
-import 'package:generatorob/model_from_json_gen.dart';
+import 'package:generatorob/AI_model_from_json_gen.dart';
 import 'package:generatorob/repository_maker.dart';
 import 'package:generatorob/service.dart';
 import 'package:http/http.dart';
@@ -19,6 +20,8 @@ class EndPointMaker {
   static String file = "lib/services/endpoint.dart";
   static String jsonPath = "lib/common/rawjson";
   static String modelPath = "lib/common/models";
+
+  static List<Map<String, dynamic>> listOfJsonData = [];
 
   // static String baseUrl = "";
 
@@ -95,6 +98,9 @@ class EndPointMaker {
 
             var url = "$baseUrl/$ans";
             print("☑️ URL :  $url");
+            var json = await ServiceMaker.fetchJsonFormApi(ans);
+            listOfJsonData.add(json);
+            JsonMaker.saveJson(json, ans.toEndpointVariableName());
             success(ans);
             break;
           }
@@ -112,19 +118,27 @@ class EndPointMaker {
 
         var json = await ServiceMaker.fetchJsonFormApi(ans);
         success(ans);
-        // print(json);
+
+        
+          listOfJsonData.add(json);
+        ///Save the json to the lib/common/rawjson
+        JsonMaker.saveJson(json, ans.toEndpointVariableName());
+
+        // print(listOfJsonData);
+
         var dc = DartClassMaker.generateDartClass(
           ans.toEndpointVariableName(),
           json,
         );
-        if (dc.isNotEmpty) {
-          var repo = RepositoryMaker.generateRepository(
-            ans,
-          );
-          print(dc);
-          print(repo);
-          printf("Need to update repo file");
-        }
+
+
+        
+        // if (dc.isNotEmpty) {
+        //   var repo = RepositoryMaker.generateRepository(ans);
+        //   // print(dc);
+        //   // print(repo);
+        //   // printf("Need to update repo file");
+        // }
       }
     }
   }

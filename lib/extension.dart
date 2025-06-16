@@ -3,7 +3,7 @@ import 'package:intl/intl.dart';
 /// Extension methods on [String] for formatting and conversions.
 extension StringExtension on String {
   /// Capitalizes the first letter of the string.
-  /// 
+  ///
   /// Example:
   /// `"hello".capitalize()` → `"Hello"`
   String capitalize() {
@@ -11,7 +11,7 @@ extension StringExtension on String {
   }
 
   /// Converts to camelCase.
-  /// 
+  ///
   /// Example:
   /// `"UserName".toCamelCase()` → `"userName"`
   String toCamelCase() {
@@ -19,7 +19,7 @@ extension StringExtension on String {
   }
 
   /// Converts snake_case to PascalCase + `Model` suffix.
-  /// 
+  ///
   /// Example:
   /// `"user_profile".toModelName()` → `"userProfileModel"`
   /// `"user".toModelName()` → `"UserModel"`
@@ -32,9 +32,9 @@ extension StringExtension on String {
       return "${string}Model";
     }
   }
-  
-   /// Converts snake_case to PascalCase + `Repository` suffix.
-  /// 
+
+  /// Converts snake_case to PascalCase + `Repository` suffix.
+  ///
   /// Example:
   /// `"user_profile".toRepoName()` → `"userProfileReposiitory"`
   /// `"user".toRepoName()` → `"UserRepository"`
@@ -49,7 +49,7 @@ extension StringExtension on String {
   }
 
   /// Converts snake_case to camelCase with `Model` suffix.
-  /// 
+  ///
   /// Example:
   /// `"user_profile".toVariableName()` → `"userProfileModel"`
   /// `"user".toVariableName()` → `"userModel"`
@@ -62,8 +62,17 @@ extension StringExtension on String {
     }
   }
 
+  String toJsonFileName() {
+    if (contains("_")) {
+      List<String> parts = split('_');
+      return "${parts.first.toLowerCase()}${parts.skip(1).map((e) => e[0].toUpperCase() + e.substring(1)).join()}Model";
+    } else {
+      return "${this[0].toLowerCase()}${substring(1)}";
+    }
+  }
+
   /// Converts the string to a `.model.dart` file name.
-  /// 
+  ///
   /// Example:
   /// `"userProfile".toFileName()` → `"userprofile.model.dart"`
   String toFileName() {
@@ -73,7 +82,7 @@ extension StringExtension on String {
   /// Extracts a clean variable name from an API endpoint.
   ///
   /// Removes query params and trailing numeric IDs.
-  /// 
+  ///
   /// Examples:
   /// `"/user/123".toEndpointVariableName()` → `"user"`
   /// `"/search?query=x".toEndpointVariableName()` → `"search"`
@@ -83,11 +92,14 @@ extension StringExtension on String {
     if (segments.isEmpty) return '';
     final last = segments.last;
     final isId = int.tryParse(last) != null;
-    return isId && segments.length > 1 ? segments[segments.length - 2] : last;
+    final result = isId && segments.length > 1
+        ? segments[segments.length - 2]
+        : last;
+    return result.toLowerCase();
   }
 
   /// Removes query params and numeric IDs from endpoint path.
-  /// 
+  ///
   /// Examples:
   /// `"/user/123".cleanEndpointPath()` → `"/user"`
   /// `"/product/details?type=basic".cleanEndpointPath()` → `"/product/details"`
