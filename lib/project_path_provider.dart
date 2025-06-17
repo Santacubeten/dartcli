@@ -1,5 +1,4 @@
 class ProjectPathProvider {
-  
   //lib/services
   static String servicePath = "lib/services";
 
@@ -8,4 +7,7 @@ class ProjectPathProvider {
 
   ///lib/common/models
   static String modelPath = "lib/common/models";
+
+  ///lib/common/repository
+  static String repositoryPath = "lib/common/repository";
 }

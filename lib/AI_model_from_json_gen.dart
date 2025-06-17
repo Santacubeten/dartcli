@@ -207,7 +207,7 @@ String _getDartType(String key, dynamic value) {
   if (value is double) return 'double';
   if (value is bool) return 'bool';
   if (value is String) {
-    return DateTime.tryParse(value) != null ? 'DateTime' : 'String';
+    return _looksLikeDate(value) ? 'DateTime' : 'String';
   }
   if (value is List) {
     if (value.isEmpty) return 'List<dynamic>';
@@ -236,15 +236,14 @@ String firstLowerCap(String input) =>
 //   }
 // }
 bool _looksLikeDate(String value) {
-  if (value.isEmpty) return false;
+  if (value.isEmpty || value.length < 10) return false;
 
-  // Heuristic check: valid date strings usually have '-', ':' or 'T'
-  final likelyDate =
-      RegExp(r'[\d]{4}-[\d]{2}-[\d]{2}').hasMatch(value) ||
-      value.contains('T') ||
-      value.contains(':');
+  // Strictly match full ISO 8601 date or datetime formats only
+  final isoPattern = RegExp(
+    r'^\d{4}-\d{2}-\d{2}([ T]\d{2}:\d{2}(:\d{2}(\.\d{1,6})?)?)?$',
+  );
 
-  if (!likelyDate) return false;
+  if (!isoPattern.hasMatch(value)) return false;
 
   final parsed = DateTime.tryParse(value);
   return parsed != null;

@@ -5,6 +5,7 @@ import 'package:generatorob/helper.dart';
 import 'package:generatorob/json_maker.dart';
 import 'package:generatorob/messages.dart';
 import 'package:generatorob/AI_model_from_json_gen.dart';
+import 'package:generatorob/object_box_initializer.maker.dart';
 import 'package:generatorob/repository_maker.dart';
 import 'package:generatorob/service.dart';
 import 'package:http/http.dart';
@@ -20,6 +21,7 @@ class EndPointMaker {
   static String file = "lib/services/endpoint.dart";
   static String jsonPath = "lib/common/rawjson";
   static String modelPath = "lib/common/models";
+  static String repoPath = "lib/common/repository";
 
   static List<Map<String, dynamic>> listOfJsonData = [];
 
@@ -127,13 +129,22 @@ class EndPointMaker {
         // print(listOfJsonData);
 
         DartClassMaker.generateDartClass(ans.toEndpointVariableName(), json);
+        printf("ob");
 
-        // if (dc.isNotEmpty) {
-        //   var repo = RepositoryMaker.generateRepository(ans);
-        //   // print(dc);
-        //   // print(repo);
-        //   // printf("Need to update repo file");
-        // }
+        var ob = ObjectBoxInitializer();
+        printf("Building objectbox... please wait");
+        await Process.run('dart', [
+          'pub',
+          'run',
+          'build_runner',
+          'build',
+        ], runInShell: true).then((result) {
+          if (result.exitCode == 0) {
+            print("✅ Build Success : ${ans.toFileName()}");
+          } else {
+            print("❗ Error : ${result.stderr}");
+          }
+        });
       }
     }
   }

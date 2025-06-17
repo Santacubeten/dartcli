@@ -12,8 +12,9 @@ import 'package:generatorob/repository_maker.dart';
 void main(List<String> arguments) async {
   // createEndPoint();
   // reset();
-  // EndPointMaker.create();
-   DartClassMaker.generateDartClass("user".toEndpointVariableName(), dummy);
+  EndPointMaker.create();
+  // RepositoryMaker.createRepositoryFile("className");
+  //  DartClassMaker.generateDartClass("user".toEndpointVariableName(), dummy);
   // JsonMaker.saveJson();
   //  var yn = promptForInput("Do you wish to generate model? : [Y/N]");
   //  if (yn.toLowerCase() == "y") {

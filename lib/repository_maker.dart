@@ -1,35 +1,27 @@
+import 'dart:io';
+
 import 'package:generatorob/extension.dart';
+import 'package:generatorob/project_path_provider.dart';
 
 class RepositoryMaker {
-  static String generateRepository(String className) {
+  String repoPath = ProjectPathProvider.repositoryPath;
+
+ 
+
+  static createRepositoryFile(String className) {
     final modelName = className.toModelName();
     final boxName = '${modelName}Repository';
+    final filePath = '${ProjectPathProvider.repositoryPath}/$boxName.dart';
 
-    return '''
-import 'package:objectbox/objectbox.dart';
-import '${className}_model.dart';
-
-class $boxName {
-  final Box<$modelName> _box;
-
-  $boxName(this._box);
-
-  int insert($modelName obj) => _box.put(obj);
-
-  void insertMany(List<$modelName> list) => _box.putMany(list);
-
-  $modelName? getById(int id) => _box.get(id);
-
-  List<$modelName> getAll() => _box.getAll();
-
-  bool remove(int id) => _box.remove(id);
-
-  void removeMany(List<int> ids) => _box.removeMany(ids);
-
-  void update($modelName obj) => _box.put(obj);
-
-  void clear() => _box.removeAll();
-}
-''';
+    if (!File(filePath).existsSync()) {
+      final repositoryClass = StringBuffer();
+      repositoryClass.writeln('class $boxName {');
+      repositoryClass.writeln('  // Repository methods go here');
+      repositoryClass.writeln('}');
+      File(filePath).writeAsStringSync(repositoryClass.toString());
+      print("Repository file created: $filePath");
+    } else {
+      print("Repository file already exists: $filePath");
+    }
   }
 }
