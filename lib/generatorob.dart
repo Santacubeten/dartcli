@@ -338,6 +338,5 @@
 //   return (baseUrl.split("//").last.split("/").first, isSecure);
 // }
 // /// NEED TO UPDATE THIS USING HTTP
-// /// 
-// /// 
-
+// ///
+// ///

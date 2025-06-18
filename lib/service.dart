@@ -4,13 +4,6 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 class ServiceMaker {
-  /// Example usage: https://jsonplaceholder.typicode.com/users/1
-  ///
-  /// To use this method:
-  /// - Set `baseUrl` to: `jsonplaceholder.typicode.com`
-  /// - Set `endpoint` to: `users/1`
-  ///
-  /// This method fetches a JSON response from the specified API endpoint.
   static Future<Map<String, dynamic>> fetchJsonFormApi(
     // String baseUrl,
     endpoint,

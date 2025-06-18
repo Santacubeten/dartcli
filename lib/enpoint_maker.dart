@@ -21,13 +21,14 @@ class EndPointMaker {
   static String file = "lib/services/endpoint.dart";
   static String jsonPath = "lib/common/rawjson";
   static String modelPath = "lib/common/models";
-  static String repoPath = "lib/common/repository";
+  // static String repoPath = "lib/common/repository";
 
   static List<Map<String, dynamic>> listOfJsonData = [];
+  static List<String> listOfName = [];
 
   // static String baseUrl = "";
-
-  static create() async {
+  /// It return lisf of names
+  static Future<List<String>> create() async {
     createFile();
     var (baseUrl, endpoint) = getBaseUrlAndEndpoints();
     count = endpoint.length;
@@ -102,6 +103,7 @@ class EndPointMaker {
             print("☑️ URL :  $url");
             var json = await ServiceMaker.fetchJsonFormApi(ans);
             listOfJsonData.add(json);
+            listOfName.add(ans.toEndpointVariableName());
             JsonMaker.saveJson(json, ans.toEndpointVariableName());
             success(ans);
             break;
@@ -120,6 +122,7 @@ class EndPointMaker {
 
         var json = await ServiceMaker.fetchJsonFormApi(ans);
         success(ans);
+        listOfName.add(ans.toEndpointVariableName());
 
         listOfJsonData.add(json);
 
@@ -129,24 +132,13 @@ class EndPointMaker {
         // print(listOfJsonData);
 
         DartClassMaker.generateDartClass(ans.toEndpointVariableName(), json);
-        printf("ob");
 
-        var ob = ObjectBoxInitializer();
-        printf("Building objectbox... please wait");
-        await Process.run('dart', [
-          'pub',
-          'run',
-          'build_runner',
-          'build',
-        ], runInShell: true).then((result) {
-          if (result.exitCode == 0) {
-            print("✅ Build Success : ${ans.toFileName()}");
-          } else {
-            print("❗ Error : ${result.stderr}");
-          }
-        });
+        // var ob = ObjectBoxInitializer();
+        // ob.create("Test");
       }
     }
+
+    return listOfName;
   }
 
   /// Creates the necessary files and directories if they do not already exist.

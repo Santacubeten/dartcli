@@ -112,6 +112,33 @@ extension StringExtension on String {
     }
     return '/${segments.join('/')}';
   }
+
+  String singularize() {
+    if (endsWith('ies')) {
+      return '${substring(0, length - 3)}y';
+    } else if (endsWith('ses') || endsWith('xes')) {
+      return substring(0, length - 2);
+    } else if (endsWith('s') && !endsWith('ss')) {
+      return substring(0, length - 1);
+    }
+    return this;
+  }
+
+  String pluralize() {
+    if (endsWith('y') && length > 1 && !isVowel(this[length - 2])) {
+      return '${substring(0, length - 1)}ies';
+    } else if (endsWith('s') ||
+        endsWith('x') ||
+        endsWith('z') ||
+        endsWith('ch') ||
+        endsWith('sh')) {
+      return '${this}es';
+    } else {
+      return '${this}s';
+    }
+  }
+
+  bool isVowel(String c) => 'aeiou'.contains(c.toLowerCase());
 }
 
 /// Converts an ISO date string into a readable format with emoji icons.
